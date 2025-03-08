@@ -34,7 +34,7 @@ git clone https://github.com/nguyentuan1696/infraops.git
 cd infraops
 ```
 
-2. Configure your inventory in inventory.ini:
+2. Configure your inventory in inventory.yml:
 ```yaml
 all:
   hosts:
@@ -47,6 +47,43 @@ all:
 ```bash 
 ansible-playbook -i inventory.yml playbook.yml
 ```
+
+## Project Structure
+
+```
+infra-ops/
+├── group_vars/
+├── meta/
+├── roles/
+│   ├── docker/
+│   ├── grafana/
+│   ├── nginx/
+│   ├── postgresql/
+│   └── prometheus/
+├── .DS_Store
+├── .gitignore
+├── Makefile
+├── README.md
+├── inventory.yml
+└── playbook.yml
+
+```
+
+Notes:
+
+- group_vars/: Contains group variables used in Ansible.
+- meta/: Contains metadata information for Ansible.
+- roles/: Contains Ansible roles for each service:
+   - docker/: Role for installing and configuring Docker.
+   - grafana/: Role for installing and configuring Grafana.
+   - nginx/: Role for installing and configuring Nginx.
+   - postgresql/: Role for installing and configuring PostgreSQL.
+   - prometheus/: Role for installing and configuring Prometheus.
+- .gitignore: File that specifies files and directories Git should ignore.
+- Makefile: File containing automation commands.
+- README.md: File with instructions and information about the project.
+- inventory.yml: Inventory file defining target servers for Ansible.
+- playbook.yml: Main playbook file to execute roles.
 
 ## Monitoring Dashboard
 Once deployed, access Grafana at: `http://your-server-ip:9090`
