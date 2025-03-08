@@ -1,0 +1,55 @@
+# Install PostgreSQL 15
+postgresql_version: 15
+
+# Network configuration
+postgresql_listen_addresses: "*"
+
+# Performance optimization
+postgresql_max_connections: 200
+postgresql_shared_buffers: "2GB"
+postgresql_effective_cache_size: "6GB"
+postgresql_work_mem: "16MB"
+
+# Database and user configuration
+postgresql_databases:
+  - name: app_db
+    owner: app_user
+    encoding: UTF-8
+  - name: backup_db
+    owner: backup_user
+    encoding: UTF-8
+
+postgresql_users:
+  - name: app_user
+    password: "StrongPassword123"
+    role_attr_flags: "CREATEDB,NOSUPERUSER"
+  - name: backup_user
+    password: "BackupPassword456"
+    role_attr_flags: "NOSUPERUSER"
+  - name: replication_user
+    password: "ReplicationPass789"
+    role_attr_flags: "REPLICATION,NOSUPERUSER"
+
+# Security configuration
+postgresql_custom_hba_entries:
+  - {
+      type: "host",
+      database: "app_db",
+      user: "app_user",
+      address: "0.0.0.0/0",
+      auth_method: "scram-sha-256",
+    }
+  - {
+      type: "host",
+      database: "replication",
+      user: "replication_user",
+      address: "10.0.0.0/24",
+      auth_method: "scram-sha-256",
+    }
+
+# Additional configuration
+postgresql_custom_settings:
+  autovacuum_vacuum_scale_factor: 0.1
+  autovacuum_analyze_scale_factor: 0.05
+  log_min_duration_statement: 1000
+  checkpoint_timeout: "15min"

@@ -1,0 +1,10 @@
+- name: Setup Infrastructure
+  hosts: all
+  become: true
+  roles:
+    - common
+    - docker
+    - nginx
+    - postgresql
+    - postgres_backup
+    - monitoring

@@ -1,0 +1,22 @@
+---
+# Ports configuration
+grafana_port: 9090
+prometheus_port: 9091
+cadvisor_port: 8080
+node_exporter_port: 9100
+
+# Container names
+grafana_container_name: grafana
+prometheus_container_name: prometheus
+cadvisor_container_name: cadvisor
+node_exporter_container_name: node-exporter
+
+# Image versions
+grafana_version: "latest"
+prometheus_version: "v2.45.0"
+cadvisor_version: "v0.47.2"
+node_exporter_version: "v1.6.1"
+
+# Data directories
+grafana_data_dir: /opt/docker/grafana
+prometheus_data_dir: /opt/docker/prometheus

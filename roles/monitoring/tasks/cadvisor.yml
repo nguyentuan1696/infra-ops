@@ -1,0 +1,18 @@
+---
+- name: Deploy cAdvisor container
+  docker_container:
+    name: "{{ cadvisor_container_name }}"
+    image: "gcr.io/cadvisor/cadvisor:{{ cadvisor_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: monitoring
+    ports:
+      - "{{ cadvisor_port }}:8080"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    privileged: true

@@ -1,0 +1,20 @@
+---
+- name: Import setup tasks
+  import_tasks: setup.yml
+  tags: [setup, monitoring]
+
+- name: Import Prometheus tasks
+  import_tasks: prometheus.yml
+  tags: [prometheus, monitoring]
+
+- name: Import Grafana tasks
+  import_tasks: grafana.yml
+  tags: [grafana, monitoring]
+
+- name: Import cAdvisor tasks
+  import_tasks: cadvisor.yml
+  tags: [cadvisor, monitoring]
+
+- name: Import Node Exporter tasks
+  import_tasks: node_exporter.yml
+  tags: [node_exporter, monitoring]

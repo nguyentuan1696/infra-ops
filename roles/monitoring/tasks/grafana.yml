@@ -1,0 +1,13 @@
+---
+- name: Deploy Grafana container
+  docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "grafana/grafana:{{ grafana_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: monitoring
+    ports:
+      - "{{ grafana_port }}:{{ grafana_port }}"
+    volumes:
+      - "{{ grafana_data_dir }}:/var/lib/grafana"

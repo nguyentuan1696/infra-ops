@@ -1,0 +1,19 @@
+---
+# Port configuration
+grafana_port: 9090
+prometheus_port: 9091
+node_exporter_port: 9100
+cadvisor_port: 8080
+
+# Data directories
+base_dir: /opt/monitoring
+prometheus_data_dir: "{{ base_dir }}/prometheus/data"
+grafana_data_dir: "{{ base_dir }}/grafana/data"
+config_dir: "{{ base_dir }}/config"
+
+# Docker configuration
+docker_network: monitoring_network
+
+# Grafana
+grafana_admin_user: admin
+grafana_admin_password: admin

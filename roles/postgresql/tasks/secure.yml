@@ -1,0 +1,31 @@
+- name: Configure password encryption method
+  lineinfile:
+    path: "{{ postgresql_config_dir }}/postgresql.conf"
+    regexp: "^#?password_encryption\\s*=\\s*.*$"
+    line: "password_encryption = scram-sha-256"
+  notify: restart postgresql
+  tags: [postgresql_secure]
+
+- name: Set log_connections to on
+  lineinfile:
+    path: "{{ postgresql_config_dir }}/postgresql.conf"
+    regexp: "^#?log_connections\\s*=\\s*.*$"
+    line: "log_connections = on"
+  notify: restart postgresql
+  tags: [postgresql_secure]
+
+- name: Set log_disconnections to on
+  lineinfile:
+    path: "{{ postgresql_config_dir }}/postgresql.conf"
+    regexp: "^#?log_disconnections\\s*=\\s*.*$"
+    line: "log_disconnections = on"
+  notify: restart postgresql
+  tags: [postgresql_secure]
+
+- name: Set log_duration to on
+  lineinfile:
+    path: "{{ postgresql_config_dir }}/postgresql.conf"
+    regexp: "^#?log_duration\\s*=\\s*.*$"
+    line: "log_duration = on"
+  notify: restart postgresql
+  tags: [postgresql_secure]

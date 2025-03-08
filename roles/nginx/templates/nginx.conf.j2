@@ -1,0 +1,41 @@
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream example1.com {
+        server 127.0.0.1:3000;
+    }
+
+    upstream example2.com {
+        server 127.0.0.1:4000;
+    }
+
+    server {
+        listen 80;
+        server_name example1.com www.example1.com;
+
+        location / {
+            proxy_pass http://example1/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+    server {
+        listen 80;
+        server_name example2.com www.example2.com;
+
+        location / {
+            proxy_pass http://example2/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}

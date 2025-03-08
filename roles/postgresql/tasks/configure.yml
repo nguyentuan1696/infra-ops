@@ -1,0 +1,34 @@
+- name: Ensure PostgreSQL configuration directory exists
+  file:
+    path: "{{ postgresql_config_dir }}"
+    state: directory
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    mode: "0750"
+  tags: [postgresql_configure]
+
+- name: Configure postgresql.conf
+  template:
+    src: postgresql.conf.j2
+    dest: "{{ postgresql_config_dir }}/postgresql.conf"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    mode: "0640"
+  notify: restart postgresql
+  tags: [postgresql_configure]
+
+- name: Configure pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_config_dir }}/pg_hba.conf"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    mode: "0640"
+  notify: reload postgresql
+  tags: [postgresql_configure]
+
+- name: Ensure PostgreSQL is running
+  service:
+    name: "{{ postgresql_service_name }}"
+    state: started
+  tags: [postgresql_configure]

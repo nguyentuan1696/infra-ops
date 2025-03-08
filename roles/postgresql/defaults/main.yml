@@ -1,0 +1,72 @@
+# PostgreSQL version and packages
+postgresql_version: 15
+postgresql_packages:
+  - "postgresql-{{ postgresql_version }}"
+  - "postgresql-client-{{ postgresql_version }}"
+  - "postgresql-contrib-{{ postgresql_version }}"
+  - "libpq-dev"
+postgresql_dependencies:
+  - python3-psycopg2
+  - acl
+
+# Service configuration
+postgresql_service_name: postgresql
+postgresql_user: postgres
+postgresql_group: postgres
+postgresql_bin_path: "/usr/lib/postgresql/{{ postgresql_version }}/bin"
+
+# Directory paths
+postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
+postgresql_config_dir: "/etc/postgresql/{{ postgresql_version }}/main"
+postgresql_pid_file: "/var/run/postgresql/{{ postgresql_version }}-main.pid"
+
+# Database settings
+postgresql_databases:
+  - name: example_db
+    owner: example_user
+    encoding: UTF-8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
+    template: template0
+
+postgresql_users:
+  - name: example_user
+    password: example_password
+    role_attr_flags: CREATEDB,NOSUPERUSER
+
+# Postgres configuration
+postgresql_port: 5432
+postgresql_listen_addresses: "localhost"
+postgresql_max_connections: 100
+postgresql_shared_buffers: "128MB"
+postgresql_effective_cache_size: "4GB"
+postgresql_work_mem: "4MB"
+postgresql_maintenance_work_mem: "64MB"
+postgresql_wal_buffers: "16MB"
+postgresql_default_statistics_target: 100
+postgresql_random_page_cost: 4.0
+postgresql_effective_io_concurrency: 2
+postgresql_max_worker_processes: 8
+postgresql_max_parallel_workers_per_gather: 2
+postgresql_max_parallel_workers: 8
+postgresql_log_directory: "log"
+postgresql_log_filename: "postgresql-%Y-%m-%d_%H%M%S.log"
+postgresql_log_rotation_age: "1d"
+postgresql_log_rotation_size: "10MB"
+
+# Security configuration
+postgresql_hba_entries:
+  - {
+      type: "host",
+      database: "all",
+      user: "all",
+      address: "0.0.0.0/0",
+      auth_method: "scram-sha-256",
+    }
+  - {
+      type: "host",
+      database: "all",
+      user: "all",
+      address: "::/0",
+      auth_method: "scram-sha-256",
+    }

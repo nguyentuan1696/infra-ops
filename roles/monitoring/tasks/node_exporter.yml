@@ -1,0 +1,20 @@
+---
+- name: Deploy Node Exporter container
+  docker_container:
+    name: "{{ node_exporter_container_name }}"
+    image: "prom/node-exporter:{{ node_exporter_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: monitoring
+    ports:
+      - "{{ node_exporter_port }}:{{ node_exporter_port }}"
+    volumes:
+      - "/proc:/host/proc:ro"
+      - "/sys:/host/sys:ro"
+      - "/:/rootfs:ro"
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
