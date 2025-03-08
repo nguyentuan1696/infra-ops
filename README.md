@@ -18,6 +18,16 @@ Ensure you have the following installed:
 
 ## Installation
 
+### Install via Ansible Galaxy
+
+You can install this role from Ansible Galaxy:
+```bash
+ansible-galaxy install nguyentuan1696.infra-ops
+```
+More details at: [Ansible Galaxy - InfraOps](https://galaxy.ansible.com/ui/standalone/roles/nguyentuan1696/infra-ops/install/)
+
+### Manual Installation
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/nguyentuan1696/infraops.git
@@ -120,3 +130,11 @@ dpkg -l | grep postgresql
 ## Contributing
 
 Feel free to open issues and pull requests
+
+## License
+
+MIT License
+
+## Contact
+
+For any inquiries, reach out via email: nguyentuan1696@gmail.com or telegram: @nguyentuan1696
