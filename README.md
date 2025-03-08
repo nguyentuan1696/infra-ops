@@ -5,7 +5,7 @@ InfraOps is an infrastructure automation project using Ansible to provision and 
 - Nginx (Web server & reverse proxy)
 - Docker (Container management)
 - PostgreSQL (Database)
--Grafana (Monitoring & visualization)
+- Grafana (Monitoring & visualization)
 - Prometheus (Metrics collection & alerting)
 
 ## Prerequisites
@@ -40,10 +40,6 @@ ansible-playbook -i inventory.yml playbook.yml
 
 ## Monitoring Dashboard
 Once deployed, access Grafana at: `http://your-server-ip:9090`
-
-## Contributing
-
-Feel free to open issues and pull requests
 
 ## Note
 
@@ -121,3 +117,6 @@ or
 ```bash
 dpkg -l | grep postgresql
 ```
+## Contributing
+
+Feel free to open issues and pull requests
