@@ -15,7 +15,7 @@
     networks:
       - name: monitoring
     ports:
-      - "{{ prometheus_port }}:{{ prometheus_port }}"
+      - "{{ prometheus_port }}:9090"
     volumes:
       - "{{ prometheus_data_dir }}/prometheus.yml:/etc/prometheus/prometheus.yml"
       - "{{ prometheus_data_dir }}:/prometheus"
@@ -23,3 +23,6 @@
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+      - "--web.external-url=http://220.231.94.117:9091"
+      - "--web.listen-address=0.0.0.0:9090"

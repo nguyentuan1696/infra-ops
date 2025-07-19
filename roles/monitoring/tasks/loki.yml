@@ -1,0 +1,41 @@
+---
+- name: Create Loki data directory
+  file:
+    path: "{{ loki_data_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "10001"
+    group: "10001"
+
+- name: Create Loki config directory in container
+  file:
+    path: "{{ loki_data_dir }}/etc/loki"
+    state: directory
+    mode: '0755'
+    owner: "10001"
+    group: "10001"
+
+- name: Copy Loki config file
+  template:
+    src: loki-config.yml.j2
+    dest: "{{ loki_data_dir }}/etc/loki/local-config.yaml"
+    mode: '0644'
+    owner: "10001"
+    group: "10001"
+
+- name: Deploy Loki container
+  docker_container:
+    name: "{{ loki_container_name }}"
+    image: "grafana/loki:{{ loki_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: monitoring
+    ports:
+      - "{{ loki_port }}:3100"
+    volumes:
+      - "{{ loki_data_dir }}:/loki"
+      - "{{ loki_data_dir }}/etc/loki:/etc/loki"
+    user: "10001:10001"
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"

@@ -1,17 +1,24 @@
-- name: Install Nginx
-  apt:
-    name: nginx
+- name: install required packages
+  yum:
+    name: "{{ item }}"
     state: present
-    update_cache: yes
+  with_items:
+   - epel-release
+   - nginx
+  tags: [nginx]
 
-- name: Copy Nginx configuration file
+- name: copy nginx configuration file
   template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
-  notify: Restart Nginx
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: restart nginx
+  tags: [nginx, config]
 
-- name: Ensure Nginx is running and enabled
+- name: enable nginx
   service:
-    name: nginx
+    name: "{{ nginx_service_name }}"
     state: started
-    enabled: yes
+  tags: [nginx, status]

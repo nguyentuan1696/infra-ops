@@ -18,3 +18,11 @@
 - name: Import Node Exporter tasks
   import_tasks: node_exporter.yml
   tags: [node_exporter, monitoring]
+
+- name: Import Loki tasks
+  import_tasks: loki.yml
+  tags: [loki, monitoring]
+
+- name: Import Promtail tasks
+  import_tasks: promtail.yml
+  tags: [promtail, monitoring]

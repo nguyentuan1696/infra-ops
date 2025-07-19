@@ -1,13 +1,24 @@
 ---
+- name: Create Grafana data directory
+  file:
+    path: "{{ grafana_data_dir }}"
+    state: directory
+    mode: '0755'
+
 - name: Deploy Grafana container
   docker_container:
     name: "{{ grafana_container_name }}"
-    image: "grafana/grafana:{{ grafana_version }}"
+    image: "{{ grafana_image }}"
     state: started
     restart_policy: unless-stopped
     networks:
       - name: monitoring
     ports:
-      - "{{ grafana_port }}:{{ grafana_port }}"
+      - "{{ grafana_port }}:3000"
+    env:
+      GF_SERVER_ROOT_URL: "http://220.231.94.117:{{ grafana_port }}"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "false"
     volumes:
       - "{{ grafana_data_dir }}:/var/lib/grafana"
+    user: "472"
+    restart: true

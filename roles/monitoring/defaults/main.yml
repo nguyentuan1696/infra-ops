@@ -12,11 +12,25 @@ cadvisor_container_name: cadvisor
 node_exporter_container_name: node-exporter
 
 # Image versions
-grafana_version: "latest"
+grafana_version: "10.0.3"
+grafana_image: "grafana/grafana:{{ grafana_version }}"
+
+# Grafana credentials
 prometheus_version: "v2.45.0"
 cadvisor_version: "v0.47.2"
 node_exporter_version: "v1.6.1"
 
+# Loki configuration
+loki_container_name: loki
+loki_version: "2.8.3"
+loki_port: 3100
+
+# Promtail configuration
+promtail_container_name: promtail
+promtail_version: "2.8.3"
+promtail_config_dir: /opt/docker/promtail
+
 # Data directories
 grafana_data_dir: /opt/docker/grafana
 prometheus_data_dir: /opt/docker/prometheus
+loki_data_dir: /opt/docker/loki

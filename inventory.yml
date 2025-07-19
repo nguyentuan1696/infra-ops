@@ -2,4 +2,5 @@ all:
   hosts:
     web:
       ansible_host: 127.0.0.1
-      ansible_user: root
+      ansible_user: nguyentuan1696
+      ansible_password: nguyentuan1696
