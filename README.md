@@ -101,6 +101,33 @@ After successful deployment, you can access the services at the following endpoi
 
 *Note: Ensure your firewall allows traffic on these ports or access them via SSH tunneling.*
 
+## Note
+
+1. **Access the Server**: Log in to your server and create an SSH key.
+
+   ```bash
+   ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_ansible -N ""
+   ```
+
+2. **Add the Public Key**: Append the contents of `id_rsa_ansible.pub` to the `authorized_keys` file to allow SSH access.
+
+   ```bash
+   cat ~/.ssh/id_rsa_ansible.pub >> ~/.ssh/authorized_keys
+   ```
+
+3. **Set Correct Permissions**: Ensure that the permissions for the `authorized_keys` file and the `.ssh` directory are set correctly to enhance security.
+
+   ```bash
+   chmod 600 ~/.ssh/authorized_keys
+   chmod 700 ~/.ssh
+   ```
+
+4. **Copy the Private Key**: Make sure to securely copy the contents of `~/.ssh/id_rsa_ansible` to your local machine or wherever you need to use it.
+
+   ```bash
+   cat ~/.ssh/id_rsa_ansible
+   ```
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
