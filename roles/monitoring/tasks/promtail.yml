@@ -18,10 +18,11 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: monitoring
+      - name: "{{ docker_network_name }}"
     volumes:
       - "{{ promtail_config_dir }}/promtail-config.yml:/etc/promtail/config.yml"
       - "/var/log:/var/log"
       - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "{{ docker_volume_logs_name }}:/var/log/bluenet-3ps-backend"
     command:
       - "-config.file=/etc/promtail/config.yml"

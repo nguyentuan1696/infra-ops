@@ -6,7 +6,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: monitoring
+      - name: "{{ docker_network_name }}"
     ports:
       - "{{ node_exporter_port }}:{{ node_exporter_port }}"
     volumes:

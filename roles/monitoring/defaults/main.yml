@@ -1,36 +1,56 @@
 ---
-# Ports configuration
-grafana_port: 9090
-prometheus_port: 9091
-cadvisor_port: 8080
-node_exporter_port: 9100
+
+# Image versions
+grafana_version: "10.0.3"
+prometheus_version: "v2.45.0"
+cadvisor_version: "v0.47.2"
+node_exporter_version: "v1.6.1"
+loki_version: "2.8.3"
+promtail_version: "2.8.3"
+alertmanager_version: "v0.28.1"
+postgres_exporter_version: "v0.15.0"
+redis_exporter_version: "latest"
 
 # Container names
 grafana_container_name: grafana
 prometheus_container_name: prometheus
 cadvisor_container_name: cadvisor
 node_exporter_container_name: node-exporter
-
-# Image versions
-grafana_version: "10.0.3"
-grafana_image: "grafana/grafana:{{ grafana_version }}"
-
-# Grafana credentials
-prometheus_version: "v2.45.0"
-cadvisor_version: "v0.47.2"
-node_exporter_version: "v1.6.1"
-
-# Loki configuration
 loki_container_name: loki
-loki_version: "2.8.3"
-loki_port: 3100
-
-# Promtail configuration
 promtail_container_name: promtail
-promtail_version: "2.8.3"
-promtail_config_dir: /opt/docker/promtail
+alertmanager_container_name: alertmanager
+postgres_exporter_container_name: postgres-exporter
+redis_exporter_container_name: redis-exporter
+
+# Ports configuration
+grafana_port: "{{ lookup('env', 'ANSIBLE_GRAFANA_PORT') | default('9090') }}"
+prometheus_port: 9091
+container_prometheus_port: 9090
+cadvisor_port: 8080
+node_exporter_port: 9100
+loki_port: 3100
+container_loki_port: 3100
+alertmanager_port: 9093
+postgres_exporter_port: 9187
+redis_exporter_port: 9121
 
 # Data directories
-grafana_data_dir: /opt/docker/grafana
-prometheus_data_dir: /opt/docker/prometheus
-loki_data_dir: /opt/docker/loki
+grafana_data_dir: "{{ base_dir_monitoring }}/grafana/data"
+prometheus_data_dir: "{{ base_dir_monitoring }}/prometheus/data"
+loki_data_dir: "{{ base_dir_monitoring }}/loki"
+alertmanager_data_dir: "{{ base_dir_monitoring }}/alertmanager"
+postgres_exporter_data_dir: "{{ base_dir_monitoring }}/postgres-exporter"
+redis_exporter_data_dir: "{{ base_dir_monitoring }}/redis-exporter"
+
+# Config directories
+loki_config_dir: "{{ config_dir }}/loki"
+promtail_config_dir: "{{ config_dir }}/promtail"
+
+# Grafana configuration
+grafana_image: "grafana/grafana:{{ grafana_version }}"
+grafana_admin_user: "{{ lookup('env', 'ANSIBLE_GRAFANA_ADMIN_USER') }}"
+grafana_admin_password: "{{ lookup('env', 'ANSIBLE_GRAFANA_ADMIN_PASSWORD') }}"
+
+# Telegram bot configuration
+telegram_bot_token: "" # Điền token bot của bạn
+telegram_chat_id: "" # Điền chat ID của bạn

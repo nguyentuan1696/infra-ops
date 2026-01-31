@@ -1,22 +1,3 @@
-- name: Ensure dependencies are installed
-  apt:
-    name: "{{ postgresql_dependencies }}"
-    state: present
-    update_cache: yes
-  tags: [postgresql, postgresql_install]
-
-- name: Include installation tasks
-  include_tasks: install.yml
-  tags: [postgresql, postgresql_install]
-
-- name: Include configuration tasks
-  include_tasks: configure.yml
-  tags: [postgresql, postgresql_configure]
-
-- name: Include security configuration
-  include_tasks: secure.yml
-  tags: [postgresql, postgresql_secure]
-
-- name: Include initialization tasks
-  include_tasks: initialize.yml
-  tags: [postgresql, postgresql_initialize]
+- name: Include Docker-based deployment
+  include_tasks: docker.yml
+  tags: [postgresql, postgresql_docker]

@@ -1,0 +1,21 @@
+- name: Ensure provisioning folder exists
+  file:
+    path: ./grafana/provisioning/dashboards
+    state: directory
+    recurse: true
+
+- name: Ensure dashboards folder exists
+  file:
+    path: ./grafana/dashboards
+    state: directory
+    recurse: true
+
+- name: Copy dashboard config provisioning file
+  template:
+    src: dashboards.yml.j2
+    dest: ./grafana/provisioning/dashboards/dashboards.yml
+
+- name: Copy NATS dashboard JSON
+  copy:
+    src: dashboards/nats_dashboard.json
+    dest: ./grafana/dashboards/nats_dashboard.json

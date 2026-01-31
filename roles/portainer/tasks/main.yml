@@ -1,0 +1,23 @@
+---
+- name: Tạo Docker volume cho Portainer
+  docker_volume:
+    name: portainer_data
+    driver: local
+
+- name: Deploy Portainer container
+  docker_container:
+    name: "{{ portainer_container_name }}"
+    image: "portainer/portainer-ce:{{ portainer_version }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "portainer_data:/data"
+    privileged: true
+    command: >
+      --http-enabled
+    networks:
+      - name: "{{ docker_network_name }}"

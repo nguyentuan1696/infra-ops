@@ -1,0 +1,15 @@
+minio_image: "minio/minio:RELEASE.2024-01-18T22-51-28Z-cpuv1"
+minio_container_name: "minio"
+minio_data_dir: "/var/lib/minio"
+
+minio_server_port: 9000
+minio_console_port: 9001
+
+# Image mc để khởi tạo buckets
+minio_mc_image: "minio/mc:latest"
+
+# Khởi tạo bucket sau khi MinIO chạy
+minio_create_buckets: true
+minio_buckets: []          # ví dụ: ["uploads", "backups"]
+minio_public_policy_buckets: []
+minio_public_policy: download  # hoặc none, public

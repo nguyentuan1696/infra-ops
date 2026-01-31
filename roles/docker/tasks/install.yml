@@ -1,3 +1,20 @@
+- name: Remove all CD-ROM repository entries from sources.list
+  lineinfile:
+    path: /etc/apt/sources.list
+    regexp: '.*cdrom.*'
+    state: absent
+  become: yes
+
+- name: Remove CD-ROM entries from sources.list.d files
+  shell: find /etc/apt/sources.list.d/ -name "*.list" -exec sed -i '/cdrom/d' {} \;
+  become: yes
+  changed_when: false
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: yes
+
 - name: Install required packages
   apt:
     name:
@@ -6,26 +23,22 @@
       - curl
       - software-properties-common
     state: present
-    update_cache: yes
+  become: yes
 
-- name: Add Docker GPG key
-  shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-
-- name: Add Docker repository
-  shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-
-- name: Install Docker
-  apt:
-    name: docker-ce
-    state: present
-    update_cache: yes
+- name: Install Docker using convenience script
+  shell: curl -fsSL https://get.docker.com | VERSION={{ docker_version }} sh
+  args:
+    creates: /usr/bin/docker
+  become: yes
 
 - name: Install Docker Compose
   shell: curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   args:
     creates: /usr/local/bin/docker-compose
+  become: yes
 
 - name: Set executable permissions for Docker Compose
   file:
     path: /usr/local/bin/docker-compose
-    mode: 'u+x,g+x'
+    mode: '0755'
+  become: yes

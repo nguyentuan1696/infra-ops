@@ -1,0 +1,36 @@
+- name: Create Vault directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ vault_config_dir }}"
+    - "{{ vault_data_dir }}"
+    - "{{ vault_logs_dir }}"
+
+- name: Copy Vault configuration
+  template:
+    src: vault.hcl.j2
+    dest: "{{ vault_config_dir }}/vault.hcl"
+    mode: '0644'
+  notify: Restart Vault
+
+- name: Deploy Vault container
+  community.docker.docker_container:
+    name: "{{ vault_container_name }}"
+    image: "{{ vault_image }}"
+    state: started
+    restart_policy: unless-stopped
+    capabilities:
+      - IPC_LOCK
+    ports:
+      - "{{ vault_port }}:8200"
+    volumes:
+      - "{{ vault_config_dir }}:/vault/config"
+      - "{{ vault_data_dir }}:/vault/file"
+      - "{{ vault_logs_dir }}:/vault/logs"
+    env:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+    command: server
+    networks:
+      - name: "{{ docker_network_name }}"

@@ -1,2 +1,2 @@
-docker_version: "latest"
+docker_version: "28.3.3"
 docker_compose_version: "latest"

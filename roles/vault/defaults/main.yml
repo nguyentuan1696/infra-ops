@@ -1,0 +1,8 @@
+vault_image: "hashicorp/vault:1.15"
+vault_container_name: "vault"
+vault_port: 8200
+vault_cluster_port: 8201
+vault_config_dir: "/opt/vault/config"
+vault_data_dir: "/opt/vault/file"
+vault_logs_dir: "/opt/vault/logs"
+vault_ui: true

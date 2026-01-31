@@ -1,0 +1,7 @@
+- name: Restart MinIO container
+  community.docker.docker_container:
+    name: "{{ minio_container_name }}"
+    image: "{{ minio_image }}"
+    state: started
+    recreate: true
+    restart_policy: always

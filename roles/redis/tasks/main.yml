@@ -1,0 +1,20 @@
+---
+- name: Tạo thư mục dữ liệu Redis
+  file:
+    path: "{{ redis_data_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Deploy Redis container
+  docker_container:
+    name: "{{ redis_container_name }}"
+    image: "redis:{{ redis_version }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ redis_port }}:6379"
+    volumes:
+      - "{{ redis_data_dir }}:/data"
+    command: ["redis-server", "--appendonly", "yes"] # Tắt appendonly để giảm tải cho SSD
+    networks:
+      - name: "{{ docker_network_name }}"

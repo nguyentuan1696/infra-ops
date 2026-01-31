@@ -1,19 +1,33 @@
 ---
-# Port configuration
-grafana_port: 9090
-prometheus_port: 9091
-node_exporter_port: 9100
-cadvisor_port: 8080
 
-# Data directories
-base_dir: /opt/monitoring
-prometheus_data_dir: "{{ base_dir }}/prometheus/data"
-grafana_data_dir: "{{ base_dir }}/grafana/data"
-config_dir: "{{ base_dir }}/config"
+# Base configuration
+base_dir_monitoring: /opt/monitoring
+config_dir: "{{ base_dir_monitoring }}/config"
 
 # Docker configuration
-docker_network: monitoring_network
+docker_network_name: tuannguyen_network
+docker_volume_logs_name: tuannguyen_logs_volume
 
-# Grafana
-grafana_admin_user: admin
-grafana_admin_password: admin
+# PostgreSQL configuration
+postgresql_container_name: postgresql
+postgresql_version: "15.13"
+postgresql_port: "{{ lookup('env', 'ANSIBLE_POSTGRESQL_PORT') }}"
+postgresql_admin_user: "{{ lookup('env', 'ANSIBLE_POSTGRESQL_ADMIN_USER') }}"
+postgresql_admin_password: "{{ lookup('env', 'ANSIBLE_POSTGRESQL_ADMIN_PASSWORD') }}"
+postgresql_admin_db: "{{ lookup('env', 'ANSIBLE_POSTGRESQL_ADMIN_DB') }}"
+postgresql_timezone: "Asia/Ho_Chi_Minh"
+postgresql_data_dir: /opt/docker/postgresql
+
+# MinIO configuration
+minio_container_name: minio
+minio_version: "2025-10-15T17-29-55Z"
+minio_server_port: "{{ lookup('env', 'ANSIBLE_MINIO_SERVER_PORT') }}"
+minio_console_port: "{{ lookup('env', 'ANSIBLE_MINIO_CONSOLE_PORT') }}"
+minio_root_user: "{{ lookup('env', 'ANSIBLE_MINIO_ROOT_USER') }}"
+minio_root_password: "{{ lookup('env', 'ANSIBLE_MINIO_ROOT_PASSWORD') }}"
+minio_buckets:
+  - uploads
+  - backups
+minio_public_policy_buckets:
+  - uploads
+minio_public_policy: download

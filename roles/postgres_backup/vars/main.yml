@@ -1,4 +1,0 @@
-db_name: mydatabase
-db_user: myuser
-backup_dir: /var/backups/postgresql
-backup_keep_days: 7

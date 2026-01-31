@@ -1,0 +1,12 @@
+traefik_image: "traefik:v3.3"
+traefik_container_name: "traefik"
+traefik_config_dir: "/opt/traefik"
+traefik_http_port: 80
+traefik_https_port: 443
+traefik_dashboard_port: 8080
+traefik_dashboard_enabled: true
+traefik_log_level: "INFO"
+# Set to true to enable ACME (Let's Encrypt)
+traefik_acme_enabled: false
+traefik_acme_email: "your-email@example.com"
+traefik_acme_storage: "{{ traefik_config_dir }}/acme.json"

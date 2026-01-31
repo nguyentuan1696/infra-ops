@@ -1,0 +1,27 @@
+---
+- name: Create Redis Exporter data directory
+  file:
+    path: "{{ redis_exporter_data_dir }}"
+    state: directory
+    mode: '0755'
+  tags:
+    - redis_exporter
+    - monitoring
+
+- name: Deploy Redis Exporter container
+  docker_container:
+    name: "{{ redis_exporter_container_name }}"
+    image: "oliver006/redis_exporter:{{ redis_exporter_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network_name }}"
+    env:
+      REDIS_ADDR: "redis://{{ redis_container_name }}:{{ redis_port }}"
+    ports:
+      - "{{ redis_exporter_port }}:9121"
+    volumes:
+      - "{{ redis_exporter_data_dir }}:/data"
+  tags:
+    - redis_exporter
+    - monitoring

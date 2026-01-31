@@ -1,0 +1,26 @@
+---
+- name: Create Postgres Exporter data directory
+  file:
+    path: "{{ postgres_exporter_data_dir }}"
+    state: directory
+    mode: '0755'
+  tags:
+    - postgres_exporter
+    - monitoring
+
+- name: Deploy Postgres Exporter container
+  docker_container:
+    name: "{{ postgres_exporter_container_name }}"
+    image: "quay.io/prometheuscommunity/postgres-exporter:{{ postgres_exporter_version }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network_name }}"
+    env:
+      DATA_SOURCE_NAME: "postgresql://{{ postgresql_admin_user }}:{{ postgresql_admin_password }}@{{ postgresql_container_name }}:5432/{{ postgresql_admin_db }}?sslmode=disable"
+    ports:
+      - "{{ postgres_exporter_port }}:9187"
+    volumes:
+      - "{{ postgres_exporter_data_dir }}:/data"
+  tags:
+    - postgres_exporter
+    - monitoring

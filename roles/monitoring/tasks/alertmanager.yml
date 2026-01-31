@@ -1,0 +1,33 @@
+---
+- name: Create Alertmanager data directory
+  file:
+    path: "{{ alertmanager_data_dir }}/etc/alertmanager"
+    state: directory
+    mode: '0755'
+    owner: "65534"
+    group: "65534"
+
+- name: Copy Alertmanager config file
+  template:
+    src: alertmanager-config.yml.j2
+    dest: "{{ alertmanager_data_dir }}/etc/alertmanager/config.yml"
+    mode: '0644'
+    owner: "65534"
+    group: "65534"
+
+- name: Deploy Alertmanager container
+  docker_container:
+    name: "{{ alertmanager_container_name }}"
+    image: "prom/alertmanager:{{ alertmanager_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network_name }}"
+    ports:
+      - "{{ alertmanager_port }}:9093"
+    volumes:
+      - "{{ alertmanager_data_dir }}/etc/alertmanager:/etc/alertmanager"
+      - "{{ alertmanager_data_dir }}/data:/alertmanager"
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'

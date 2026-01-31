@@ -1,0 +1,43 @@
+- name: Create Traefik configuration directory
+  file:
+    path: "{{ traefik_config_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create Traefik dynamic configuration directory
+  file:
+    path: "{{ traefik_config_dir }}/dynamic"
+    state: directory
+    mode: '0755'
+
+- name: Create acme.json file
+  copy:
+    content: ""
+    dest: "{{ traefik_config_dir }}/acme.json"
+    force: no
+    mode: '0600'
+
+- name: Copy Traefik configuration
+  template:
+    src: traefik.yml.j2
+    dest: "{{ traefik_config_dir }}/traefik.yml"
+    mode: '0644'
+  notify: restart traefik
+
+- name: Deploy Traefik container
+  community.docker.docker_container:
+    name: "{{ traefik_container_name }}"
+    image: "{{ traefik_image }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ traefik_http_port }}:80"
+      - "{{ traefik_https_port }}:443"
+      - "{{ traefik_dashboard_port }}:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "{{ traefik_config_dir }}/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "{{ traefik_config_dir }}/dynamic:/etc/traefik/dynamic:ro"
+      - "{{ traefik_config_dir }}/acme.json:/etc/traefik/acme.json"
+    networks:
+      - name: "{{ docker_network_name }}"

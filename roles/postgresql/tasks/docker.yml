@@ -1,0 +1,25 @@
+---
+- name: Tạo thư mục dữ liệu PostgreSQL
+  file:
+    path: "{{ postgresql_data_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Deploy PostgreSQL container
+  docker_container:
+    name: "{{ postgresql_container_name }}"
+    image: "postgres:{{ postgresql_version }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ postgresql_port }}:5432"
+    env:
+      POSTGRES_PASSWORD: "{{ postgresql_admin_password }}"
+      POSTGRES_USER: "{{ postgresql_admin_user }}"
+      POSTGRES_DB: "{{ postgresql_admin_db }}"
+      TZ: "{{ postgresql_timezone }}"     
+      PGTZ: "{{ postgresql_timezone }}"       
+    volumes:
+      - "{{ postgresql_data_dir }}:/var/lib/postgresql/data"
+    networks:
+      - name: "{{ docker_network_name }}"

@@ -1,8 +1,23 @@
 ---
+# 1. Cài đặt các thành phần cơ bản trước
 - name: Import setup tasks
   import_tasks: setup.yml
   tags: [setup, monitoring]
 
+# 2. Cài đặt các exporter trước khi cài monitoring system
+- name: Import Node Exporter tasks
+  import_tasks: node_exporter.yml
+  tags: [node_exporter, monitoring]
+
+- name: Import Postgres Exporter tasks
+  import_tasks: postgres_exporter.yml
+  tags: [postgres_exporter, monitoring]
+
+- name: Import Redis Exporter tasks
+  import_tasks: redis_exporter.yml
+  tags: [redis_exporter, monitoring]
+
+# 3. Cài đặt hệ thống monitoring core
 - name: Import Prometheus tasks
   import_tasks: prometheus.yml
   tags: [prometheus, monitoring]
@@ -11,13 +26,10 @@
   import_tasks: grafana.yml
   tags: [grafana, monitoring]
 
+# 4. Cài đặt các thành phần bổ sung
 - name: Import cAdvisor tasks
   import_tasks: cadvisor.yml
   tags: [cadvisor, monitoring]
-
-- name: Import Node Exporter tasks
-  import_tasks: node_exporter.yml
-  tags: [node_exporter, monitoring]
 
 - name: Import Loki tasks
   import_tasks: loki.yml
@@ -26,3 +38,24 @@
 - name: Import Promtail tasks
   import_tasks: promtail.yml
   tags: [promtail, monitoring]
+
+# 5. Cuối cùng là import dashboard sau khi Grafana đã được cài đặt
+- name: Import Redis Dashboard tasks
+  import_tasks: redis_dashboard.yml
+  tags: [redis_dashboard, monitoring]
+
+- name: Import Node Exporter Full Dashboard tasks
+  import_tasks: node_exporter_dashboard.yml
+  tags: [node_exporter_full_dashboard, monitoring]
+
+- name: Import Docker Dashboard tasks
+  import_tasks: docker_dashboard.yml
+  tags: [docker_dashboard, monitoring]
+
+- name: Import Postgres Dashboard tasks
+  import_tasks: postgres_dashboard.yml
+  tags: [postgres_dashboard, monitoring]
+
+- name: Import NATS Dashboard tasks
+  import_tasks: nats_dashboard.yml
+  tags: [nats_dashboard, monitoring]

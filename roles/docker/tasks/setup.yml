@@ -1,0 +1,20 @@
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+  become: yes
+  
+- name: Ensure {{ docker_network_name }} exists
+  docker_network:
+    name: "{{ docker_network_name }}"
+    driver: bridge
+    state: present
+  become: yes
+
+- name: Ensure {{ docker_volume_logs_name }} volume exists
+  docker_volume:
+    name: "{{ docker_volume_logs_name }}"
+    driver: local
+    state: present
+  become: yes

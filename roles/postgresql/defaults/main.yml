@@ -16,7 +16,6 @@ postgresql_group: postgres
 postgresql_bin_path: "/usr/lib/postgresql/{{ postgresql_version }}/bin"
 
 # Directory paths
-postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
 postgresql_config_dir: "/etc/postgresql/{{ postgresql_version }}/main"
 postgresql_pid_file: "/var/run/postgresql/{{ postgresql_version }}-main.pid"
 
@@ -70,3 +69,10 @@ postgresql_hba_entries:
       address: "::/0",
       auth_method: "scram-sha-256",
     }
+# --- Docker deployment ---
+postgresql_container_name: postgres
+postgresql_admin_password: "StrongAdminPass123"
+postgresql_admin_user: "postgres"
+postgresql_admin_db: "postgres"
+postgresql_data_dir: /opt/docker/postgres/data  # Keep this one
+postgresql_timezone: "Asia/Ho_Chi_Minh"  # múi giờ cho container

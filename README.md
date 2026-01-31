@@ -1,172 +1,109 @@
-## Overview
+# InfraOps
 
-InfraOps is an infrastructure automation project using Ansible to provision and manage services such as:
+InfraOps is a comprehensive infrastructure automation project using Ansible to provision, manage, and monitor a modern containerized environment. It simplifies the deployment of core services, monitoring stacks, and security tools.
 
-- Nginx (Web server & reverse proxy)
-- Docker (Container management)
-- PostgreSQL (Database)
-- Grafana (Monitoring & visualization)
-- Prometheus (Metrics collection & alerting)
+## Features
+
+This project automates the deployment of the following services:
+
+- **Core Infrastructure**:
+  - **Docker**: Container runtime and network setup.
+  - **Traefik**: Modern reverse proxy and load balancer with dashboard support.
+  - **Portainer**: Web-based UI for managing Docker containers.
+
+- **Data Services**:
+  - **PostgreSQL**: Relational database system.
+  - **Redis**: In-memory data structure store.
+  - **MinIO**: High-performance object storage (S3 compatible).
+
+- **Security**:
+  - **HashiCorp Vault**: Secret management and data protection.
+
+- **Monitoring & Observability**:
+  - **Prometheus**: Metrics collection and alerting.
+  - **Grafana**: Visualization dashboards (Pre-configured for Docker, Redis, Postgres, etc.).
+  - **Alertmanager**: Handling alerts from Prometheus.
+  - **Loki & Promtail**: Log aggregation and querying.
+  - **cAdvisor & Node Exporter**: Container and system metric exporters.
 
 ## Prerequisites
 
-Ensure you have the following installed:
-
-- Ansible (>=2.9)
-- SSH access to target servers
-- Python (>=3.6)
+- **Ansible** (>= 2.9)
+- **SSH Access** to the target servers.
+- **Python** (>= 3.8) on the control node.
+- Target User with `sudo` privileges.
 
 ## Installation
 
-### Install via Ansible Galaxy
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/nguyentuan1696/infraops.git
+   cd infraops
+   ```
 
-You can install this role from Ansible Galaxy:
-```bash
-ansible-galaxy install nguyentuan1696.infra-ops
-```
-More details at: [Ansible Galaxy - InfraOps](https://galaxy.ansible.com/ui/standalone/roles/nguyentuan1696/infra-ops/install/)
+2. **Configure Inventory:**
+   Edit `inventory.yml` to match your target servers:
+   ```yaml
+   all:
+     hosts:
+       your-server:
+         ansible_host: 192.168.1.100
+         ansible_user: your-user
+   ```
 
-### Manual Installation
+3. **Configure Variables (Optional):**
+   Check `group_vars/all.yml` or role-specific `defaults/main.yml` to customize ports, versions, or passwords.
 
-1. Clone the repository:
-```bash
-git clone https://github.com/nguyentuan1696/infraops.git
-cd infraops
-```
-
-2. Configure your inventory in inventory.yml:
-```yaml
-all:
-  hosts:
-    web:
-      ansible_host: 127.0.0.1
-      ansible_user: root
-```
-
-3. Run the Ansible playbook
-```bash 
-ansible-playbook -i inventory.yml playbook.yml
-```
+4. **Run the Playbook:**
+   ```bash
+   ansible-playbook -i inventory.yml playbook.yml
+   ```
+   
+   To run specific tags (e.g., only deploy traefik):
+   ```bash
+   ansible-playbook -i inventory.yml playbook.yml --tags traefik
+   ```
 
 ## Project Structure
 
 ```
 infra-ops/
-├── group_vars/
-├── meta/
-├── roles/
-│   ├── docker/
-│   ├── grafana/
-│   ├── nginx/
-│   ├── postgresql/
-│   └── prometheus/
-├── .DS_Store
-├── .gitignore
-├── Makefile
-├── README.md
-├── inventory.yml
-└── playbook.yml
-
+├── group_vars/          # Global variables
+├── roles/               # Ansible roles
+│   ├── common/          # Basic system setup
+│   ├── docker/          # Docker engine setup
+│   ├── minio/           # Object storage
+│   ├── monitoring/      # Observability stack (Prometheus, Grafana, Loki, etc.)
+│   ├── portainer/       # Container management UI
+│   ├── postgresql/      # Database
+│   ├── redis/           # Cache
+│   ├── traefik/         # Reverse Proxy
+│   └── vault/           # Secrets management
+├── inventory.yml        # Server inventory
+├── playbook.yml         # Main playbook
+└── README.md            # Documentation
 ```
 
-Notes:
+## Services & Access
 
-- group_vars/: Contains group variables used in Ansible.
-- meta/: Contains metadata information for Ansible.
-- roles/: Contains Ansible roles for each service:
-   - docker/: Role for installing and configuring Docker.
-   - grafana/: Role for installing and configuring Grafana.
-   - nginx/: Role for installing and configuring Nginx.
-   - postgresql/: Role for installing and configuring PostgreSQL.
-   - prometheus/: Role for installing and configuring Prometheus.
-- .gitignore: File that specifies files and directories Git should ignore.
-- Makefile: File containing automation commands.
-- README.md: File with instructions and information about the project.
-- inventory.yml: Inventory file defining target servers for Ansible.
-- playbook.yml: Main playbook file to execute roles.
+After successful deployment, you can access the services at the following endpoints (default ports):
 
-## Monitoring Dashboard
-Once deployed, access Grafana at: `http://your-server-ip:9090`
+| Service | Port | Description |
+|---------|------|-------------|
+| **Traefik Dashboard** | `8080` | Load Balancer Dashboard |
+| **Portainer** | `9000` | Docker Management UI |
+| **Grafana** | `3000` | Monitoring Dashboards (Login: admin/admin) |
+| **Prometheus** | `9090` | Metrics Browser |
+| **MinIO Console** | `9001` | Object Storage UI |
+| **Vault UI** | `8200` | Secrets Management UI |
+| **PostgreSQL** | `5432` | Database Connection |
+| **Redis** | `6379` | Cache Connection |
 
-## Note
+*Note: Ensure your firewall allows traffic on these ports or access them via SSH tunneling.*
 
-1. **Access the Server**: Log in to your server and create an SSH key.
-
-   ```bash
-   ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_ansible -N ""
-   ```
-
-2. **Add the Public Key**: Append the contents of `id_rsa_ansible.pub` to the `authorized_keys` file to allow SSH access.
-
-   ```bash
-   cat ~/.ssh/id_rsa_ansible.pub >> ~/.ssh/authorized_keys
-   ```
-
-3. **Set Correct Permissions**: Ensure that the permissions for the `authorized_keys` file and the `.ssh` directory are set correctly to enhance security.
-
-   ```bash
-   chmod 600 ~/.ssh/authorized_keys
-   chmod 700 ~/.ssh
-   ```
-
-4. **Copy the Private Key**: Make sure to securely copy the contents of `~/.ssh/id_rsa_ansible` to your local machine or wherever you need to use it.
-
-   ```bash
-   cat ~/.ssh/id_rsa_ansible
-   ```
-
-### Important Notes
-
-- Keep your private key secure and do not share it publicly.
-- Ensure that the SSH service is running on your server to allow connections.
-- If you encounter any issues, check the SSH configuration and firewall settings.
-
-## Completely remove PostgreSQL
-
-To completely remove PostgreSQL from your system, follow these steps:
-
-### **1. Stop the PostgreSQL Service**
-```bash
-sudo systemctl stop postgresql
-```
-
-### **2. Uninstall PostgreSQL and Related Packages**
-```bash
-sudo apt remove --purge postgresql postgresql-*
-```
-
-### **3. Remove PostgreSQL Data and Configuration Files**
-```bash
-sudo rm -rf /var/lib/postgresql/
-sudo rm -rf /etc/postgresql/
-sudo rm -rf /etc/postgresql-common/
-sudo rm -rf /var/log/postgresql/
-```
-
-### **4. Remove PostgreSQL User and Group (Optional)**
-```bash
-sudo deluser postgres
-sudo delgroup postgres
-```
-
-### **5. Clean Up Unused Dependencies**
-```bash
-sudo apt autoremove
-sudo apt autoclean
-```
-
-### **6. Verify PostgreSQL is Completely Removed**
-Check if any PostgreSQL-related services or files are still present:
-```bash
-psql --version
-```
-or
-```bash
-dpkg -l | grep postgresql
-```
 ## Contributing
 
-Feel free to open issues and pull requests
+Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
 
 ## License
 
@@ -174,4 +111,4 @@ MIT License
 
 ## Contact
 
-For any inquiries, reach out via email: nguyentuan1696@gmail.com or telegram: @nguyentuan1696
+For any inquiries, reach out via email: nguyentuan1696@gmail.com or Telegram: [@nguyentuan1696](https://t.me/nguyentuan1696)

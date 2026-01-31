@@ -1,0 +1,4 @@
+- name: Restart Vault
+  community.docker.docker_container:
+    name: "{{ vault_container_name }}"
+    restart: yes

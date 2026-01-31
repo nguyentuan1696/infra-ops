@@ -17,6 +17,14 @@ scrape_configs:
           job: varlogs
           __path__: /var/log/*log
 
+  - job_name: bluenet-3ps-backend
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: bluenet-3ps-backend
+          __path__: /var/log/bluenet-3ps-backend/*.log
+
   - job_name: docker
     static_configs:
       - targets:

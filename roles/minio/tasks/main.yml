@@ -1,0 +1,68 @@
+# tasks file for role: minio
+
+- name: Validate required credentials
+  assert:
+    that:
+      - minio_root_user is defined
+      - minio_root_user | length > 0
+      - minio_root_password is defined
+      - minio_root_password | length >= 8
+    fail_msg: "Vui lòng đặt minio_root_user và minio_root_password (>= 8 ký tự)."
+
+- name: Ensure data directory exists
+  file:
+    path: "{{ minio_data_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Run MinIO container
+  community.docker.docker_container:
+    name: "{{ minio_container_name }}"
+    image: "{{ minio_image }}"
+    restart_policy: always
+    state: started
+    command: >-
+      server /data --address :{{ minio_server_port }} --console-address :{{ minio_console_port }}
+    env:
+      MINIO_ROOT_USER: "{{ minio_root_user }}"
+      MINIO_ROOT_PASSWORD: "{{ minio_root_password }}"
+    networks:
+      - name: "{{ docker_network_name }}"
+    published_ports:
+      - "{{ minio_server_port }}:{{ minio_server_port }}"
+      - "{{ minio_console_port }}:{{ minio_console_port }}"
+    volumes:
+      - "{{ minio_data_dir }}:/data"
+
+# Dùng biến môi trường MC_HOST_local để không cần alias persist qua các container
+- name: Create buckets
+  community.docker.docker_container:
+    name: "minio-mc-mk-{{ item }}"
+    image: "{{ minio_mc_image }}"
+    state: started
+    recreate: true
+    auto_remove: true
+    network_mode: host
+    env:
+      MC_HOST_local: "http://{{ minio_root_user }}:{{ minio_root_password }}@127.0.0.1:{{ minio_server_port }}"
+    command: >-
+      mc mb --ignore-existing local/{{ item }}
+  loop: "{{ minio_buckets }}"
+  when: (minio_create_buckets | default(true)) | bool
+
+- name: Set public policy for buckets
+  community.docker.docker_container:
+    name: "minio-mc-policy-{{ item }}"
+    image: "{{ minio_mc_image }}"
+    state: started
+    recreate: true
+    auto_remove: true
+    network_mode: host
+    env:
+      MC_HOST_local: "http://{{ minio_root_user }}:{{ minio_root_password }}@127.0.0.1:{{ minio_server_port }}"
+    command: >-
+      mc anonymous set {{ minio_public_policy }} local/{{ item }}
+  loop: "{{ minio_public_policy_buckets }}"
+  when:
+    - (minio_create_buckets | default(true)) | bool
+    - minio_public_policy_buckets | length > 0

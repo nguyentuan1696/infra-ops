@@ -30,7 +30,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: monitoring
+      - name: "{{ docker_network_name }}"
     ports:
       - "{{ loki_port }}:3100"
     volumes:

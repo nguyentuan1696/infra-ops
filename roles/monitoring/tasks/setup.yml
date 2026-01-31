@@ -16,5 +16,17 @@
 
 - name: Create Docker network for monitoring
   docker_network:
-    name: monitoring
+    name: "{{ docker_network_name }}"
     state: present
+
+- name: Ensure Prometheus datasource provisioning folder exists
+  file:
+    path: ./grafana/provisioning/datasources
+    state: directory
+    recurse: true
+
+- name: Copy Prometheus datasource provisioning file
+  template:
+    src: datasource.yml.j2
+    dest: ./grafana/provisioning/datasources/datasource.yml
+    mode: "0644"

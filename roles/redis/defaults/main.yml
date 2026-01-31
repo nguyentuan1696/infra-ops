@@ -1,0 +1,4 @@
+redis_version: "7.2-alpine"
+redis_container_name: redis
+redis_data_dir: /opt/docker/redis/data
+redis_port: 6379
