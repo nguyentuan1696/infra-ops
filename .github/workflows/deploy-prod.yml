@@ -1,0 +1,86 @@
+name: Deploy Infrastructure (Production)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy-production:
+    environment:
+      name: production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up SSH
+        run: |
+          echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+      - name: Run Ansible playbook (Production)
+        env:
+          ANSIBLE_GRAFANA_ADMIN_USER: ${{ secrets.PROD_ANSIBLE_GRAFANA_ADMIN_USER }}
+          ANSIBLE_GRAFANA_ADMIN_PASSWORD: ${{ secrets.PROD_ANSIBLE_GRAFANA_ADMIN_PASSWORD }}
+          ANSIBLE_GRAFANA_PORT: ${{ secrets.PROD_ANSIBLE_GRAFANA_PORT }}
+          
+          ANSIBLE_USER: ${{ secrets.PROD_ANSIBLE_USER }}
+          ANSIBLE_HOST: ${{ secrets.PROD_ANSIBLE_HOST }}
+          ANSIBLE_PORT: ${{ secrets.PROD_ANSIBLE_PORT }}
+          
+          ANSIBLE_POSTGRESQL_ADMIN_USER: ${{ secrets.PROD_ANSIBLE_POSTGRESQL_ADMIN_USER }}
+          ANSIBLE_POSTGRESQL_ADMIN_PASSWORD: ${{ secrets.PROD_ANSIBLE_POSTGRESQL_ADMIN_PASSWORD }}
+          ANSIBLE_POSTGRESQL_ADMIN_DB: ${{ secrets.PROD_ANSIBLE_POSTGRESQL_ADMIN_DB }}
+          ANSIBLE_POSTGRESQL_PORT: ${{ secrets.PROD_ANSIBLE_POSTGRESQL_PORT }}
+          
+          ANSIBLE_MINIO_SERVER_PORT: ${{ secrets.PROD_ANSIBLE_MINIO_PORT }}
+          ANSIBLE_MINIO_CONSOLE_PORT: ${{ secrets.PROD_ANSIBLE_MINIO_CONSOLE_PORT }}
+          ANSIBLE_MINIO_ROOT_USER: ${{ secrets.PROD_ANSIBLE_MINIO_ROOT_USER }}
+          ANSIBLE_MINIO_ROOT_PASSWORD: ${{ secrets.PROD_ANSIBLE_MINIO_ROOT_PASSWORD }}
+          
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: |
+          ansible-playbook -i inventory.yml playbook.yml --private-key private_key.pem -u ${{ secrets.PROD_ANSIBLE_USER }} -e env=production
+
+  notify:
+    needs: [deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Determine deployment status
+        id: status
+        run: |
+          if [[ "${{ needs.deploy-production.result }}" == "success" ]]; then
+            echo "status=✅ Success" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.deploy-production.result }}" == "failure" ]]; then
+            echo "status=❌ Failed" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.deploy-production.result }}" == "skipped" ]]; then
+            echo "status=⏭️ Skipped" >> $GITHUB_OUTPUT
+          else
+            echo "status=⚠️ Partial" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify deployment status
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+
+            👻*Author:* ${{ github.actor }}
+            *Message:* `${{ github.event.head_commit.message }}`
+            
+            *Project:* ${{ github.repository }}
+            *Branch:* ${{ github.ref_name }}
+            *Status:* ${{ steps.status.outputs.status }}
+            *Commit:* [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            
+            *Prod Deploy:* ${{ needs.deploy-production.result }}
